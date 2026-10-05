@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff7fa;
+      color: #392d33;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 24px 18px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 22px;
+      color: #c65f87;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .subtitle {
+      color: #9b7c89;
+      margin-bottom: 26px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 22px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 20px rgba(120, 70, 90, 0.08);
+    }
+
+    .counter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid #f4e6ec;
+    }
+
+    .counter-row:last-child {
+      border-bottom: 0;
+    }
+
+    .counter-name {
+      font-weight: bold;
+    }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .counter button {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border: 0;
+      border-radius: 12px;
+      background: #f7dce7;
+      color: #c65f87;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .counter input {
+      box-sizing: border-box;
+      width: 48px;
+      height: 38px;
+      border: 2px solid #f2dce5;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: #392d33;
+    }
+
+    .total {
+      margin: 18px 0;
+      padding: 18px;
+      background: #fff0f5;
+      border-radius: 18px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .warning {
+      display: none;
+      margin: -6px 0 18px;
+      color: #c65f87;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .save-button {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      padding: 15px;
+      background: #e978a4;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <a class="back" href="index.html">← На главную</a>
+
+    <h1>План на неделю 🌸</h1>
+
+    <div class="subtitle">
+      Выбери, сколько тренировок хочешь сделать
+    </div>
+
+    <section class="card">
+
+      <div class="counter-row">
+        <div class="counter-name">Зарядка</div>
+
+        <div class="counter">
+          <button type="button" onclick="changeValue('morning', -1)">−</button>
+          <input id="morning" type="number" min="0" value="7">
+          <button type="button" onclick="changeValue('morning', 1)">+</button>
+        </div>
+      </div>
+
+      <div class="counter-row">
+        <div class="counter-name">Силовые</div>
+
+        <div class="counter">
+          <button type="button" onclick="changeValue('strength', -1)">−</button>
+          <input id="strength" type="number" min="0" value="3">
+          <button type="button" onclick="changeValue('strength', 1)">+</button>
+        </div>
+      </div>
+
+      <div class="counter-row">
+        <div class="counter-name">Растяжка</div>
+
+        <div class="counter">
+          <button type="button" onclick="changeValue('stretching', -1)">−</button>
+          <input id="stretching" type="number" min="0" value="1">
+          <button type="button" onclick="changeValue('stretching', 1)">+</button>
+        </div>
+      </div>
+
+      <div class="counter-row">
+        <div class="counter-name">МФР</div>
+
+        <div class="counter">
+          <button type="button" onclick="changeValue('mfr', -1)">−</button>
+          <input id="mfr" type="number" min="0" value="1">
+          <button type="button" onclick="changeValue('mfr', 1)">+</button>
+        </div>
+      </div>
+
+    </section>
+
+    <div class="total">
+      Всего вечером: <span id="evening-total">5</span>
+    </div>
+
+    <div class="warning" id="warning">
+      Выбери минимум 5 вечерних тренировок 🌸
+    </div>
+
+    <button class="save-button" type="button" onclick="savePlan()">
+  Сохранить план
+</button>
+
+  </main>
+
+<script>
+  const eveningIds = [
+    'strength',
+    'stretching',
+    'mfr'
+  ];
+
+  function getWeekKey() {
+  const now = new Date();
+
+  const monday = new Date(now);
+  const day = now.getDay();
+  const daysFromMonday = day === 0 ? 6 : day - 1;
+
+  monday.setDate(now.getDate() - daysFromMonday);
+  monday.setHours(0, 0, 0, 0);
+
+  const year = monday.getFullYear();
+  const month = String(monday.getMonth() + 1).padStart(2, '0');
+  const date = String(monday.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${date}`;
+}
+
+  function getValue(id) {
+    const input = document.getElementById(id);
+    const value = Number(input.value);
+
+    if (!Number.isFinite(value) || value < 0) {
+      return 0;
+    }
+
+    return Math.floor(value);
+  }
+
+  function changeValue(id, change) {
+    const input = document.getElementById(id);
+
+    const newValue = Math.max(
+      0,
+      getValue(id) + change
+    );
+
+    input.value = newValue;
+
+    updateTotal();
+  }
+
+  function updateTotal() {
+    let total = 0;
+
+    eveningIds.forEach(id => {
+      total += getValue(id);
+    });
+
+    document.getElementById('evening-total').textContent =
+      total;
+
+    const warning = document.getElementById('warning');
+
+    if (total < 5) {
+      warning.style.display = 'block';
+    } else {
+      warning.style.display = 'none';
+    }
+  }
+
+  function savePlan() {
+    const morning = getValue('morning');
+    const strength = getValue('strength');
+    const stretching = getValue('stretching');
+    const mfr = getValue('mfr');
+
+    const eveningTotal =
+      strength + stretching + mfr;
+
+    if (eveningTotal < 5) {
+      document.getElementById('warning').style.display = 'block';
+      return;
+    }
+
+    const plan = {
+      morning: morning,
+      strength: strength,
+      stretching: stretching,
+      mfr: mfr
+    };
+
+    const weeklyPlans =
+  JSON.parse(localStorage.getItem('weeklyPlans')) || {};
+
+const weekKey = getWeekKey();
+
+weeklyPlans[weekKey] = plan;
+
+localStorage.setItem(
+  'weeklyPlans',
+  JSON.stringify(weeklyPlans)
+);
+
+    window.location.href = 'index.html';
+  }
+
+  document.querySelectorAll('.counter input').forEach(input => {
+    input.addEventListener('input', updateTotal);
+
+    input.addEventListener('change', function() {
+      this.value = getValue(this.id);
+      updateTotal();
+    });
+  });
+const weeklyPlans =
+  JSON.parse(localStorage.getItem('weeklyPlans')) || {};
+
+const savedPlan =
+  weeklyPlans[getWeekKey()];
+
+if (savedPlan) {
+  document.getElementById('morning').value =
+    savedPlan.morning;
+
+  document.getElementById('strength').value =
+    savedPlan.strength;
+
+  document.getElementById('stretching').value =
+    savedPlan.stretching;
+
+  document.getElementById('mfr').value =
+    savedPlan.mfr;
+}
+
+  updateTotal();
+</script>
+
+</body>
+</html>

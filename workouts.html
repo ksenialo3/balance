@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff7fa;
+      color: #392d33;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 24px 18px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 22px;
+      color: #c65f87;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .subtitle {
+      color: #9b7c89;
+      margin-bottom: 26px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-bottom: 24px;
+      padding-bottom: 4px;
+    }
+
+    .add-workout {
+  margin-bottom: 18px;
+  background: white;
+  color: #c65f87;
+  border: 2px solid #f7dce7;
+}
+
+    .filter {
+      width: auto;
+      white-space: nowrap;
+      background: #f7dce7;
+      color: #9f4568;
+      padding: 10px 14px;
+    }
+
+    .filter.active {
+      background: #e978a4;
+      color: white;
+    }
+
+    .workout {
+      background: white;
+      padding: 20px;
+      border-radius: 22px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 20px rgba(120, 70, 90, 0.08);
+    }
+
+    .type {
+      display: inline-block;
+      background: #fff0f5;
+      color: #c65f87;
+      padding: 6px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .workout h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .details {
+      color: #9b7c89;
+      margin-bottom: 18px;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      padding: 14px;
+      background: #e978a4;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .delete-button {
+  margin-top: 10px;
+  background: transparent;
+  color: #b88a9c;
+}
+.complete-button {
+  margin-top: 10px;
+  background: #f3bfd2;
+  color: #7f3f59;
+}
+
+.week-hint {
+  display: none;
+  background: white;
+  padding: 20px;
+  border-radius: 22px;
+  margin-bottom: 18px;
+  box-shadow: 0 6px 20px rgba(120, 70, 90, 0.08);
+}
+
+.week-hint-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.week-hint-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  color: #9b7c89;
+}
+
+.week-hint-row strong {
+  color: #e978a4;
+}
+  </style>
+</head>
+<body>
+
+  <main class="app">
+
+    <a class="back" href="index.html">← На главную</a>
+
+    <h1 id="page-title">Мои тренировки 🌸</h1>
+
+    <div class="subtitle">
+      Только те тренировки, которые я выбрала сама
+    </div>
+    <section class="week-hint" id="week-hint">
+  <div class="week-hint-title">
+    На эту неделю осталось
+  </div>
+
+  <div id="week-hint-content"></div>
+</section>
+
+<button class="add-workout" onclick="window.location.href='add-workout.html'">
+  + Добавить тренировку
+</button>
+    <div class="filters">
+  <button class="filter active" data-category="all">
+    Все
+  </button>
+
+  <button class="filter" data-category="morning">
+    Зарядка
+  </button>
+
+  <button class="filter" data-category="strength">
+    Силовые
+  </button>
+
+  <button class="filter" data-category="stretching">
+    Растяжка
+  </button>
+
+  <button class="filter" data-category="mfr">
+    МФР
+  </button>
+</div>
+
+<div id="workouts-list"></div>
+
+  </main>
+
+  <script src="workouts.js"></script>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get('type');
+
+    const title = document.getElementById('page-title');
+
+    if (type === 'morning') {
+      title.textContent = 'Зарядки ☀️';
+    }
+
+    if (type === 'evening') {
+      title.textContent = 'Вечерние тренировки 🌙';
+    }
+const filters =
+  document.querySelector('.filters');
+
+const morningFilter =
+  document.querySelector('[data-category="morning"]');
+
+if (type === 'morning') {
+  filters.style.display = 'none';
+}
+
+if (type === 'evening') {
+  morningFilter.style.display = 'none';
+}
+
+const workoutsList = document.getElementById('workouts-list');
+const savedWorkouts =
+  JSON.parse(localStorage.getItem('myWorkouts')) || [];
+
+const allWorkouts = [
+  ...workoutsData,
+  ...savedWorkouts
+];
+function showWeekHint() {
+  if (type !== 'evening') {
+    return;
+  }
+
+  const now = new Date();
+
+  const startOfWeek = new Date(now);
+  const day = now.getDay();
+  const daysFromMonday = day === 0 ? 6 : day - 1;
+
+  startOfWeek.setDate(
+    now.getDate() - daysFromMonday
+  );
+
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const year = startOfWeek.getFullYear();
+  const month =
+    String(startOfWeek.getMonth() + 1).padStart(2, '0');
+  const date =
+    String(startOfWeek.getDate()).padStart(2, '0');
+
+  const weekKey =
+    `${year}-${month}-${date}`;
+
+  const weeklyPlans =
+    JSON.parse(localStorage.getItem('weeklyPlans')) || {};
+
+  const plan =
+    weeklyPlans[weekKey];
+
+  if (!plan) {
+    return;
+  }
+
+  const history =
+    JSON.parse(localStorage.getItem('workoutHistory')) || [];
+
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+  const counts = {
+    strength: 0,
+    stretching: 0,
+    mfr: 0
+  };
+
+  history.forEach(item => {
+    const completedDate =
+      new Date(item.completedAt);
+
+    if (
+      completedDate >= startOfWeek &&
+      completedDate < endOfWeek &&
+      counts[item.category] !== undefined
+    ) {
+      counts[item.category]++;
+    }
+  });
+
+  const remaining = {
+    strength: Math.max(
+      0,
+      plan.strength - counts.strength
+    ),
+
+    stretching: Math.max(
+      0,
+      plan.stretching - counts.stretching
+    ),
+
+    mfr: Math.max(
+      0,
+      plan.mfr - counts.mfr
+    )
+  };
+
+  const names = {
+    strength: 'Силовые',
+    stretching: 'Растяжка',
+    mfr: 'МФР'
+  };
+
+  const hint =
+    document.getElementById('week-hint');
+
+  const content =
+    document.getElementById('week-hint-content');
+
+  const categories =
+    Object.keys(remaining).filter(category =>
+      remaining[category] > 0
+    );
+
+  hint.style.display = 'block';
+
+  if (categories.length === 0) {
+    content.innerHTML =
+      'Недельная цель выполнена 🌸';
+
+    return;
+  }
+
+  content.innerHTML = '';
+
+  categories.forEach(category => {
+    content.innerHTML += `
+      <div class="week-hint-row">
+        <span>${names[category]}</span>
+        <strong>${remaining[category]}</strong>
+      </div>
+    `;
+  });
+}
+
+showWeekHint();
+
+let visibleWorkouts = allWorkouts;
+
+if (type === 'morning') {
+  visibleWorkouts = allWorkouts.filter(workout =>
+    workout.category === 'morning'
+  );
+}
+
+if (type === 'evening') {
+  visibleWorkouts = allWorkouts.filter(workout =>
+    workout.category !== 'morning'
+  );
+}
+
+function renderWorkouts(workouts) {
+  workoutsList.innerHTML = '';
+
+  workouts.forEach(workout => {
+    workoutsList.innerHTML += `
+      <section class="workout">
+        <div class="type">${workout.categoryName}</div>
+
+        <h2>${workout.title}</h2>
+
+        <div class="details">
+          ${workout.duration} минут
+        </div>
+
+        <button onclick="window.open('${workout.url}', '_blank')">
+          Начать тренировку
+        </button>
+
+        <button
+          class="complete-button"
+          onclick="completeWorkout(${workout.id})"
+        >
+          ✓ Выполнено
+        </button>
+
+        <button
+          class="delete-button"
+          onclick="deleteWorkout(${workout.id})"
+        >
+          Удалить
+        </button>
+      </section>
+    `;
+  });
+}
+
+renderWorkouts(visibleWorkouts);
+
+const filterButtons =
+  document.querySelectorAll('.filter');
+
+filterButtons.forEach(button => {
+  button.addEventListener('click', function() {
+    const category = this.dataset.category;
+
+    filterButtons.forEach(item => {
+      item.classList.remove('active');
+    });
+
+    this.classList.add('active');
+
+    if (category === 'all') {
+      renderWorkouts(visibleWorkouts);
+      return;
+    }
+
+    const filteredWorkouts =
+      visibleWorkouts.filter(workout =>
+        workout.category === category
+      );
+
+    renderWorkouts(filteredWorkouts);
+  });
+});
+function deleteWorkout(id) {
+  const savedWorkouts =
+    JSON.parse(localStorage.getItem('myWorkouts')) || [];
+
+  const updatedWorkouts =
+    savedWorkouts.filter(workout => workout.id !== id);
+
+  localStorage.setItem(
+    'myWorkouts',
+    JSON.stringify(updatedWorkouts)
+  );
+
+  window.location.reload();
+}
+function completeWorkout(id) {
+  const workout = allWorkouts.find(item => item.id === id);
+
+  if (!workout) {
+    return;
+  }
+
+  const history =
+    JSON.parse(localStorage.getItem('workoutHistory')) || [];
+const now = new Date();
+
+const duplicate = history.some(item => {
+  if (item.workoutId !== workout.id) {
+    return false;
+  }
+
+  const completedDate = new Date(item.completedAt);
+
+  const difference =
+    now.getTime() - completedDate.getTime();
+
+  return difference >= 0 &&
+         difference < 5 * 60 * 1000;
+});
+
+if (duplicate) {
+  alert('Эта тренировка уже отмечена как выполненная 🌸');
+  return;
+}
+
+  const completedWorkout = {
+    id: Date.now(),
+    workoutId: workout.id,
+    title: workout.title,
+    category: workout.category,
+    categoryName: workout.categoryName,
+    duration: workout.duration,
+    completedAt: now.toISOString()  };
+
+  history.push(completedWorkout);
+
+  localStorage.setItem(
+    'workoutHistory',
+    JSON.stringify(history)
+  );
+
+  const undo = confirm(
+  'Тренировка отмечена как выполненная 🌸\n\nНажми «ОК», чтобы оставить отметку.\n«Отмена» — чтобы удалить её.'
+);
+
+if (!undo) {
+  const updatedHistory =
+    history.filter(item => item.id !== completedWorkout.id);
+
+  localStorage.setItem(
+    'workoutHistory',
+    JSON.stringify(updatedHistory)
+  );
+
+  alert('Отметка отменена');
+}
+}
+  </script>
+
+</body>
+</html>

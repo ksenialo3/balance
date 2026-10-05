@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BALANCE</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff7fa;
+      color: #392d33;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 24px 18px;
+    }
+
+    h1 {
+      margin-bottom: 6px;
+      font-size: 30px;
+    }
+
+    .date {
+      color: #9b7c89;
+      margin-bottom: 28px;
+    }
+
+    .motivation {
+      background: #f7dce7;
+      padding: 24px;
+      border-radius: 24px;
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    .motivation p {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.5;
+      font-weight: bold;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 22px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 20px rgba(120, 70, 90, 0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 19px;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      padding: 14px;
+      background: #e978a4;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .progress {
+      margin-top: 28px;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f4e6ec;
+    }
+    .week-tracker {
+  margin-top: 28px;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: 52px repeat(7, 1fr);
+  align-items: center;
+  gap: 10px 4px;
+}
+
+.day-name {
+  text-align: center;
+  font-size: 11px;
+  color: #9b7c89;
+}
+
+.row-name {
+  font-size: 12px;
+  font-weight: bold;
+  color: #9b7c89;
+}
+
+.tracker-dot {
+  text-align: center;
+  font-size: 21px;
+  color: #e978a4;
+}
+
+.day-name span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #392d33;
+}
+.day-name.today {
+  background: #f7dce7;
+  border-radius: 12px;
+  padding: 6px 2px;
+}
+.edit-plan-button {
+  margin-top: 16px;
+  background: #f7dce7;
+  color: #c65f87;
+}
+.stats-preview {
+  display: flex;
+  gap: 32px;
+  margin: 18px 0 24px;
+}
+
+.stats-preview div {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.stats-preview strong {
+  font-size: 26px;
+  font-weight: 800;
+  color: #e978a4;
+}
+
+.stats-preview span {
+  font-size: 14px;
+  color: #9b7c89;
+}
+
+.statistics-button {
+  margin-top: 6px;
+  background: #f7dce7;
+  color: #c65f87;
+}
+.plan-reminder {
+  display: none;
+}
+
+.plan-reminder p {
+  color: #9b7c89;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <h1>Привет 🌸</h1>
+    <div class="date">Сегодня начинаем двигаться</div>
+
+    <section class="motivation">
+      <p>
+        Ты не обязана хотеть тренироваться.<br>
+        Достаточно просто начать.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>☀️ Утренняя зарядка</h2>
+      <p>Начни день с движения</p>
+      <button onclick="window.location.href='workouts.html?type=morning'">Выбрать зарядку</button>
+    </section>
+
+    <section class="card">
+      <h2>🌙 Вечерняя тренировка</h2>
+      <p>Выбери то, что подходит тебе сегодня</p>
+      <button onclick="window.location.href='workouts.html?type=evening'">Выбрать тренировку</button>
+    </section>
+<section class="card plan-reminder" id="plan-reminder">
+  <h2>План на новую неделю 🌸</h2>
+
+  <p>
+    Выбери, сколько тренировок хочешь сделать на этой неделе.
+  </p>
+
+  <button onclick="window.location.href='weekly-plan.html'">
+    Составить план
+  </button>
+</section>
+
+    <section class="card week-tracker">
+
+  <div class="week-days">
+   <div class="week-grid">
+
+  <div></div>
+<div class="day-name">ПН<span id="date-0"></span></div>
+<div class="day-name">ВТ<span id="date-1"></span></div>
+<div class="day-name">СР<span id="date-2"></span></div>
+<div class="day-name">ЧТ<span id="date-3"></span></div>
+<div class="day-name">ПТ<span id="date-4"></span></div>
+<div class="day-name">СБ<span id="date-5"></span></div>
+<div class="day-name">ВС<span id="date-6"></span></div>
+
+  <div class="row-name">Утро</div>
+<div class="tracker-dot" id="morning-0">○</div>
+<div class="tracker-dot" id="morning-1">○</div>
+<div class="tracker-dot" id="morning-2">○</div>
+<div class="tracker-dot" id="morning-3">○</div>
+<div class="tracker-dot" id="morning-4">○</div>
+<div class="tracker-dot" id="morning-5">○</div>
+<div class="tracker-dot" id="morning-6">○</div>
+
+  <div class="row-name">Вечер</div>
+<div class="tracker-dot" id="evening-0">○</div>
+<div class="tracker-dot" id="evening-1">○</div>
+<div class="tracker-dot" id="evening-2">○</div>
+<div class="tracker-dot" id="evening-3">○</div>
+<div class="tracker-dot" id="evening-4">○</div>
+<div class="tracker-dot" id="evening-5">○</div>
+<div class="tracker-dot" id="evening-6">○</div>
+
+</div>
+  </div>
+</section>
+
+    <section class="card progress">
+
+      <h2>План недели</h2>
+
+<div class="progress-row">
+  <span>Зарядка</span>
+  <strong id="morning-progress">0/7</strong>
+</div>
+
+<div class="progress-row">
+  <span>Силовые</span>
+  <strong id="strength-progress">0/3</strong>
+</div>
+
+<div class="progress-row">
+  <span>Растяжка</span>
+  <strong id="stretching-progress">0/1</strong>
+</div>
+
+<div class="progress-row">
+  <span>МФР</span>
+  <strong id="mfr-progress">0/1</strong>
+</div>
+<button
+  id="plan-button"
+  class="edit-plan-button"
+  onclick="window.location.href='weekly-plan.html'"
+>
+  Изменить план
+</button>
+    </section>
+    <section class="card">
+  <h2>Статистика</h2>
+
+  <div class="stats-preview">
+    <div>
+      <strong id="month-workouts">0</strong>
+      <span id="workouts-word">занятий</span>
+    </div>
+
+    <div>
+      <strong id="month-minutes">0</strong>
+      <span>минут</span>
+    </div>
+  </div>
+
+  <button
+    class="statistics-button"
+    onclick="window.location.href='statistics.html'"
+  >
+    Подробнее
+  </button>
+</section>
+
+  </main>
+<script>
+  const history =
+    JSON.parse(localStorage.getItem('workoutHistory')) || [];
+const currentMonthHistory = history.filter(item => {
+  const completedDate = new Date(item.completedAt);
+  const now = new Date();
+
+  return (
+    completedDate.getMonth() === now.getMonth() &&
+    completedDate.getFullYear() === now.getFullYear()
+  );
+});
+
+let currentMonthMinutes = 0;
+
+currentMonthHistory.forEach(item => {
+  currentMonthMinutes += Number(item.duration) || 0;
+});
+
+document.getElementById('month-workouts').textContent =
+  currentMonthHistory.length;
+  const workoutsCount =
+  currentMonthHistory.length;
+
+let workoutsWord = 'занятий';
+
+if (
+  workoutsCount % 10 === 1 &&
+  workoutsCount % 100 !== 11
+) {
+  workoutsWord = 'занятие';
+} else if (
+  workoutsCount % 10 >= 2 &&
+  workoutsCount % 10 <= 4 &&
+  (
+    workoutsCount % 100 < 12 ||
+    workoutsCount % 100 > 14
+  )
+) {
+  workoutsWord = 'занятия';
+}
+
+document.getElementById('workouts-word').textContent =
+  workoutsWord;
+
+document.getElementById('month-minutes').textContent =
+  currentMonthMinutes;
+
+  const now = new Date();
+
+  const startOfWeek = new Date(now);
+  const day = now.getDay();
+  const daysFromMonday = day === 0 ? 6 : day - 1;
+
+  startOfWeek.setDate(now.getDate() - daysFromMonday);
+  startOfWeek.setHours(0, 0, 0, 0);
+for (let i = 0; i < 7; i++) {
+  const date = new Date(startOfWeek);
+  date.setDate(startOfWeek.getDate() + i);
+
+  const dateElement = document.getElementById(`date-${i}`);
+
+  dateElement.textContent = date.getDate();
+
+  if (
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear()
+  ) {
+    dateElement.parentElement.classList.add('today');
+  }
+}
+
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+  const thisWeekHistory = history.filter(item => {
+    const completedDate = new Date(item.completedAt);
+
+    return completedDate >= startOfWeek &&
+           completedDate < endOfWeek;
+  });
+
+  const counts = {
+    morning: 0,
+    strength: 0,
+    stretching: 0,
+    mfr: 0
+  };
+
+  thisWeekHistory.forEach(item => {
+    if (counts[item.category] !== undefined) {
+      counts[item.category]++;
+    }
+  });
+  thisWeekHistory.forEach(item => {
+  const completedDate = new Date(item.completedAt);
+
+  const dayIndex = Math.floor(
+    (completedDate - startOfWeek) / (1000 * 60 * 60 * 24)
+  );
+
+  if (dayIndex < 0 || dayIndex > 6) {
+    return;
+  }
+
+  if (item.category === 'morning') {
+    const dot = document.getElementById(`morning-${dayIndex}`);
+
+    if (dot) {
+      dot.textContent = '●';
+    }
+  } else {
+    const dot = document.getElementById(`evening-${dayIndex}`);
+
+    if (dot) {
+      dot.textContent = '●';
+    }
+  }
+});
+
+const year = startOfWeek.getFullYear();
+const month = String(startOfWeek.getMonth() + 1).padStart(2, '0');
+const date = String(startOfWeek.getDate()).padStart(2, '0');
+
+const weekKey = `${year}-${month}-${date}`;
+
+const weeklyPlans =
+  JSON.parse(localStorage.getItem('weeklyPlans')) || {};
+
+const weeklyPlan = weeklyPlans[weekKey];
+const planButton =
+  document.getElementById('plan-button');
+
+const planReminder =
+  document.getElementById('plan-reminder');
+
+if (weeklyPlan) {
+  planButton.textContent = 'Изменить план';
+  planReminder.style.display = 'none';
+} else {
+  planButton.textContent = 'Составить план';
+  planReminder.style.display = 'block';
+}
+
+if (!weeklyPlan) {
+  document.getElementById('morning-progress').textContent =
+    `${counts.morning}/—`;
+
+  document.getElementById('strength-progress').textContent =
+    `${counts.strength}/—`;
+
+  document.getElementById('stretching-progress').textContent =
+    `${counts.stretching}/—`;
+
+  document.getElementById('mfr-progress').textContent =
+    `${counts.mfr}/—`;
+} else {
+  document.getElementById('morning-progress').textContent =
+    `${counts.morning}/${weeklyPlan.morning}`;
+
+  document.getElementById('strength-progress').textContent =
+    `${counts.strength}/${weeklyPlan.strength}`;
+
+  document.getElementById('stretching-progress').textContent =
+    `${counts.stretching}/${weeklyPlan.stretching}`;
+
+  document.getElementById('mfr-progress').textContent =
+    `${counts.mfr}/${weeklyPlan.mfr}`;
+}
+
+</script>
+</body>
+</html>ы

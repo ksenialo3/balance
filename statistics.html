@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff7fa;
+      color: #392d33;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 24px 18px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 22px;
+      color: #c65f87;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .subtitle {
+      color: #9b7c89;
+      margin-bottom: 26px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 22px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 20px rgba(120, 70, 90, 0.08);
+    }
+
+    .month-title {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 11px 0;
+      border-bottom: 1px solid #f4e6ec;
+    }
+
+    .stats-row:last-child {
+      border-bottom: 0;
+    }
+
+    .stats-value {
+      font-weight: bold;
+      color: #c65f87;
+    }
+    .calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-weekdays {
+  margin-bottom: 8px;
+}
+
+.calendar-weekdays div {
+  text-align: center;
+  font-size: 11px;
+  color: #9b7c89;
+}
+
+.calendar-day {
+  min-height: 42px;
+  padding: 6px 2px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.calendar-day.today {
+  background: #f7dce7;
+  font-weight: bold;
+}
+
+.calendar-day.empty {
+  visibility: hidden;
+}
+.day-number {
+  margin-bottom: 4px;
+}
+
+.day-trackers {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+}
+
+.mini-dot {
+  font-size: 11px;
+  color: #e978a4;
+}
+
+.month-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.month-title {
+  margin-bottom: 0;
+}
+
+.month-navigation button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  background: transparent;
+  color: #c65f87;
+  font-size: 24px;
+  cursor: pointer;
+}
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <a class="back" href="index.html">← На главную</a>
+
+    <h1>Статистика 🌸</h1>
+
+    <div class="subtitle">
+      Мой прогресс и регулярность
+    </div>
+
+    <section class="card">
+
+      <div class="month-navigation">
+  <button id="prev-month">‹</button>
+
+  <div class="month-title" id="month-title">
+    Месяц
+  </div>
+
+  <button id="next-month">›</button>
+</div>
+
+      <div class="calendar-weekdays">
+  <div>ПН</div>
+  <div>ВТ</div>
+  <div>СР</div>
+  <div>ЧТ</div>
+  <div>ПТ</div>
+  <div>СБ</div>
+  <div>ВС</div>
+</div>
+
+<div class="calendar-grid" id="month-calendar"></div>
+
+    </section>
+
+    <section class="card">
+
+      <div class="stats-row">
+        <span>Зарядка</span>
+        <span class="stats-value" id="morning-count">0</span>
+      </div>
+
+      <div class="stats-row">
+        <span>Силовые</span>
+        <span class="stats-value" id="strength-count">0</span>
+      </div>
+
+      <div class="stats-row">
+        <span>Растяжка</span>
+        <span class="stats-value" id="stretching-count">0</span>
+      </div>
+
+      <div class="stats-row">
+        <span>МФР</span>
+        <span class="stats-value" id="mfr-count">0</span>
+      </div>
+
+    </section>
+
+    <section class="card">
+      <div class="stats-row">
+        <span>Всего тренировок</span>
+        <span class="stats-value" id="total-count">0</span>
+      </div>
+
+      <div class="stats-row">
+        <span>Всего минут</span>
+        <span class="stats-value" id="total-minutes">0</span>
+      </div>
+    </section>
+
+  </main>
+
+ <script>
+  const history =
+    JSON.parse(localStorage.getItem('workoutHistory')) || [];
+
+  const monthNames = [
+    'Январь',
+    'Февраль',
+    'Март',
+    'Апрель',
+    'Май',
+    'Июнь',
+    'Июль',
+    'Август',
+    'Сентябрь',
+    'Октябрь',
+    'Ноябрь',
+    'Декабрь'
+  ];
+
+  const today = new Date();
+
+  let displayedDate = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    1
+  );
+
+  function renderMonth() {
+    const year = displayedDate.getFullYear();
+    const month = displayedDate.getMonth();
+
+    document.getElementById('month-title').textContent =
+      `${monthNames[month]} ${year}`;
+
+    const monthHistory = history.filter(item => {
+      const date = new Date(item.completedAt);
+
+      return (
+        date.getMonth() === month &&
+        date.getFullYear() === year
+      );
+    });
+
+    const calendar =
+      document.getElementById('month-calendar');
+
+    calendar.innerHTML = '';
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    let firstWeekday = firstDay.getDay();
+
+    if (firstWeekday === 0) {
+      firstWeekday = 7;
+    }
+
+    for (let i = 1; i < firstWeekday; i++) {
+      calendar.innerHTML += `
+        <div class="calendar-day empty"></div>
+      `;
+    }
+
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      const isToday =
+        day === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear();
+
+      calendar.innerHTML += `
+        <div class="calendar-day ${isToday ? 'today' : ''}">
+          <div class="day-number">${day}</div>
+
+          <div class="day-trackers">
+            <span
+              class="mini-dot"
+              id="month-morning-${day}"
+            >○</span>
+
+            <span
+              class="mini-dot"
+              id="month-evening-${day}"
+            >○</span>
+          </div>
+        </div>
+      `;
+    }
+
+    monthHistory.forEach(item => {
+      const date = new Date(item.completedAt);
+      const day = date.getDate();
+
+      if (item.category === 'morning') {
+        const dot =
+          document.getElementById(`month-morning-${day}`);
+
+        if (dot) {
+          dot.textContent = '●';
+        }
+      } else {
+        const dot =
+          document.getElementById(`month-evening-${day}`);
+
+        if (dot) {
+          dot.textContent = '●';
+        }
+      }
+    });
+
+    const counts = {
+      morning: 0,
+      strength: 0,
+      stretching: 0,
+      mfr: 0
+    };
+
+    let totalMinutes = 0;
+
+    monthHistory.forEach(item => {
+      if (counts[item.category] !== undefined) {
+        counts[item.category]++;
+      }
+
+      totalMinutes += Number(item.duration) || 0;
+    });
+
+    document.getElementById('morning-count').textContent =
+      counts.morning;
+
+    document.getElementById('strength-count').textContent =
+      counts.strength;
+
+    document.getElementById('stretching-count').textContent =
+      counts.stretching;
+
+    document.getElementById('mfr-count').textContent =
+      counts.mfr;
+
+    document.getElementById('total-count').textContent =
+      monthHistory.length;
+
+    document.getElementById('total-minutes').textContent =
+      totalMinutes;
+  }
+
+  document.getElementById('prev-month')
+    .addEventListener('click', function() {
+      displayedDate.setMonth(
+        displayedDate.getMonth() - 1
+      );
+
+      renderMonth();
+    });
+
+  document.getElementById('next-month')
+    .addEventListener('click', function() {
+      displayedDate.setMonth(
+        displayedDate.getMonth() + 1
+      );
+
+      renderMonth();
+    });
+
+  renderMonth();
+</script>
+
+</body>
+</html>

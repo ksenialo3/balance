@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff7fa;
+      color: #392d33;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 24px 18px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 22px;
+      color: #c65f87;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .subtitle {
+      color: #9b7c89;
+      margin-bottom: 28px;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input,
+    select {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #f2dce5;
+      border-radius: 16px;
+      background: white;
+      color: #392d33;
+      font-size: 16px;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #e978a4;
+    }
+
+    .save-button {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      padding: 15px;
+      background: #e978a4;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <a class="back" href="workouts.html">← Назад к тренировкам</a>
+
+    <h1>Новая тренировка 🌸</h1>
+
+    <div class="subtitle">
+      Добавь тренировку в свою библиотеку
+    </div>
+
+    <form id="workout-form">
+
+      <div class="field">
+        <label for="title">Название</label>
+        <input
+          id="title"
+          type="text"
+          placeholder="Например: Пилатес на всё тело"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="category">Категория</label>
+
+        <select id="category" required>
+          <option value="">Выбери категорию</option>
+          <option value="morning">Зарядка</option>
+          <option value="strength">Силовая</option>
+          <option value="stretching">Растяжка</option>
+          <option value="mfr">МФР</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="duration">Продолжительность, минут</label>
+        <input
+          id="duration"
+          type="number"
+          min="1"
+          placeholder="Например: 40"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="url">Ссылка на видео ВК</label>
+        <input
+          id="url"
+          type="url"
+          placeholder="Вставь ссылку"
+          required
+        >
+      </div>
+
+      <button class="save-button" type="submit">
+        Сохранить тренировку
+      </button>
+
+    </form>
+
+  </main>
+
+  <script>
+  const form = document.getElementById('workout-form');
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const title = document.getElementById('title').value;
+    const category = document.getElementById('category').value;
+    const duration = Number(document.getElementById('duration').value);
+    const url = document.getElementById('url').value;
+
+    const categoryNames = {
+      morning: 'Зарядка',
+      strength: 'Силовая',
+      stretching: 'Растяжка',
+      mfr: 'МФР'
+    };
+
+    const newWorkout = {
+      id: Date.now(),
+      title: title,
+      category: category,
+      categoryName: categoryNames[category],
+      duration: duration,
+      url: url
+    };
+
+    const savedWorkouts =
+      JSON.parse(localStorage.getItem('myWorkouts')) || [];
+
+    savedWorkouts.push(newWorkout);
+
+    localStorage.setItem(
+      'myWorkouts',
+      JSON.stringify(savedWorkouts)
+    );
+
+    window.location.href = 'workouts.html';
+  });
+</script>
+</body>
+</html>
