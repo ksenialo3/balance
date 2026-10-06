@@ -405,9 +405,41 @@ backupInput.addEventListener('change', async function() {
       throw new Error('В резервной копии не хватает данных');
     }
 
-    alert(
-      'Резервная копия BALANCE успешно проверена 🌸'
-    );
+    const shouldRestore =
+  confirm(
+    'Резервная копия проверена 🌸\n\n' +
+    'Восстановить данные из этой копии?\n\n' +
+    'Текущие данные BALANCE будут заменены.'
+  );
+
+if (!shouldRestore) {
+  backupInput.value = '';
+  return;
+}
+
+localStorage.setItem(
+  'myWorkouts',
+  JSON.stringify(backup.data.myWorkouts)
+);
+
+localStorage.setItem(
+  'workoutHistory',
+  JSON.stringify(backup.data.workoutHistory)
+);
+
+localStorage.setItem(
+  'weeklyPlans',
+  JSON.stringify(backup.data.weeklyPlans)
+);
+
+localStorage.setItem(
+  'myQuotes',
+  JSON.stringify(backup.data.myQuotes)
+);
+await restorePhotos(backup.photos);
+alert(
+  'Данные BALANCE восстановлены 🌸'
+);
   } catch (error) {
     alert(
       'Не удалось прочитать резервную копию BALANCE'
@@ -416,6 +448,68 @@ backupInput.addEventListener('change', async function() {
 
   backupInput.value = '';
 });
+async function restorePhotos(photos) {
+  const restoredPhotos = [];
+
+  for (const photo of photos) {
+    const response =
+      await fetch(photo.image);
+
+    const image =
+      await response.blob();
+
+    restoredPhotos.push({
+      id: photo.id,
+      image: image
+    });
+  }
+
+  return new Promise(function(resolve, reject) {
+    const request =
+      indexedDB.open('balanceDatabase', 1);
+
+    request.onupgradeneeded = function(event) {
+      const database = event.target.result;
+
+      if (!database.objectStoreNames.contains('photos')) {
+        database.createObjectStore(
+          'photos',
+          { keyPath: 'id' }
+        );
+      }
+    };
+
+    request.onsuccess = function(event) {
+      const database = event.target.result;
+
+      const transaction =
+        database.transaction('photos', 'readwrite');
+
+      const store =
+        transaction.objectStore('photos');
+
+      store.clear();
+
+      restoredPhotos.forEach(function(photo) {
+        store.put(photo);
+      });
+
+      transaction.oncomplete = function() {
+        database.close();
+        resolve();
+      };
+
+      transaction.onerror = function() {
+        database.close();
+        reject(transaction.error);
+      };
+    };
+
+    request.onerror = function() {
+      reject(request.error);
+    };
+  });
+}
 </script>
 </body>
 </html>
