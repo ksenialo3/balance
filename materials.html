@@ -72,6 +72,31 @@
       color: #9b7c89;
       line-height: 1.5;
     }
+    .photos-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.photo-card {
+  background: white;
+  padding: 8px;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(120, 70, 90, 0.08);
+}
+
+.photo-card img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.photo-card .delete-button {
+  margin: 0;
+}
   </style>
 </head>
 
@@ -88,6 +113,9 @@
     <h2>✨ Цитаты</h2>
 
     <div id="quotes-list"></div>
+    <h2>🌸 Фото</h2>
+
+<div id="photos-list" class="photos-list"></div>
 
   </main>
 
@@ -141,8 +169,109 @@
         'myQuotes',
         JSON.stringify(updatedQuotes)
       );
+function renderPhotos() {
+  const list =
+    document.getElementById('photos-list');
 
+  list.innerHTML = '';
+
+  const request =
+    indexedDB.open('balanceDatabase', 1);
+
+  request.onupgradeneeded = function(event) {
+    const database = event.target.result;
+
+    if (!database.objectStoreNames.contains('photos')) {
+      database.createObjectStore(
+        'photos',
+        { keyPath: 'id' }
+      );
+    }
+  };
+
+  request.onsuccess = function(event) {
+    const database = event.target.result;
+
+    const transaction =
+      database.transaction('photos', 'readonly');
+
+    const store =
+      transaction.objectStore('photos');
+
+    const getPhotos = store.getAll();
+
+    getPhotos.onsuccess = function() {
+      const photos = getPhotos.result;
+
+      if (photos.length === 0) {
+        list.innerHTML =
+          '<div class="empty">Фото пока нет</div>';
+
+        database.close();
+        return;
+      }
+
+      photos.forEach(photo => {
+        const card =
+          document.createElement('div');
+
+        card.className = 'photo-card';
+
+        const image =
+          document.createElement('img');
+
+        const imageUrl =
+          URL.createObjectURL(photo.image);
+
+        image.src = imageUrl;
+
+        image.onload = function() {
+          URL.revokeObjectURL(imageUrl);
+        };
+
+        const button =
+          document.createElement('button');
+
+        button.className = 'delete-button';
+        button.textContent = 'Удалить';
+
+        button.addEventListener('click', function() {
+          deletePhoto(photo.id);
+        });
+
+        card.appendChild(image);
+        card.appendChild(button);
+        list.appendChild(card);
+      });
+
+      database.close();
+    };
+  };
+}
+
+function deletePhoto(id) {
+  const request =
+    indexedDB.open('balanceDatabase', 1);
+
+  request.onsuccess = function(event) {
+    const database = event.target.result;
+
+    const transaction =
+      database.transaction('photos', 'readwrite');
+
+    const store =
+      transaction.objectStore('photos');
+
+    store.delete(id);
+
+    transaction.oncomplete = function() {
+      database.close();
+      renderPhotos();
+    };
+  };
+}
       renderQuotes();
+      renderPhotos();
     }
 
     renderQuotes();
