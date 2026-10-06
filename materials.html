@@ -119,163 +119,165 @@
 
   </main>
 
-  <script>
-    function renderQuotes() {
-      const quotes =
-        JSON.parse(localStorage.getItem('myQuotes')) || [];
+ <script>
+  function renderQuotes() {
+    const quotes =
+      JSON.parse(localStorage.getItem('myQuotes')) || [];
 
-      const list =
-        document.getElementById('quotes-list');
+    const list =
+      document.getElementById('quotes-list');
 
-      list.innerHTML = '';
+    list.innerHTML = '';
 
-      if (quotes.length === 0) {
-        list.innerHTML =
-          '<div class="empty">Цитат пока нет</div>';
+    if (quotes.length === 0) {
+      list.innerHTML =
+        '<div class="empty">Цитат пока нет</div>';
 
-        return;
-      }
-
-      quotes.forEach(quote => {
-        const card = document.createElement('div');
-        card.className = 'quote-card';
-
-        const text = document.createElement('div');
-        text.className = 'quote-text';
-        text.textContent = `✨ ${quote.text}`;
-
-        const button = document.createElement('button');
-        button.className = 'delete-button';
-        button.textContent = 'Удалить';
-
-        button.addEventListener('click', function() {
-          deleteQuote(quote.id);
-        });
-
-        card.appendChild(text);
-        card.appendChild(button);
-        list.appendChild(card);
-      });
+      return;
     }
 
-    function deleteQuote(id) {
-      const quotes =
-        JSON.parse(localStorage.getItem('myQuotes')) || [];
+    quotes.forEach(quote => {
+      const card = document.createElement('div');
+      card.className = 'quote-card';
 
-      const updatedQuotes =
-        quotes.filter(quote => quote.id !== id);
+      const text = document.createElement('div');
+      text.className = 'quote-text';
+      text.textContent = `✨ ${quote.text}`;
 
-      localStorage.setItem(
-        'myQuotes',
-        JSON.stringify(updatedQuotes)
-      );
-function renderPhotos() {
-  const list =
-    document.getElementById('photos-list');
+      const button = document.createElement('button');
+      button.className = 'delete-button';
+      button.textContent = 'Удалить';
 
-  list.innerHTML = '';
-
-  const request =
-    indexedDB.open('balanceDatabase', 1);
-
-  request.onupgradeneeded = function(event) {
-    const database = event.target.result;
-
-    if (!database.objectStoreNames.contains('photos')) {
-      database.createObjectStore(
-        'photos',
-        { keyPath: 'id' }
-      );
-    }
-  };
-
-  request.onsuccess = function(event) {
-    const database = event.target.result;
-
-    const transaction =
-      database.transaction('photos', 'readonly');
-
-    const store =
-      transaction.objectStore('photos');
-
-    const getPhotos = store.getAll();
-
-    getPhotos.onsuccess = function() {
-      const photos = getPhotos.result;
-
-      if (photos.length === 0) {
-        list.innerHTML =
-          '<div class="empty">Фото пока нет</div>';
-
-        database.close();
-        return;
-      }
-
-      photos.forEach(photo => {
-        const card =
-          document.createElement('div');
-
-        card.className = 'photo-card';
-
-        const image =
-          document.createElement('img');
-
-        const imageUrl =
-          URL.createObjectURL(photo.image);
-
-        image.src = imageUrl;
-
-        image.onload = function() {
-          URL.revokeObjectURL(imageUrl);
-        };
-
-        const button =
-          document.createElement('button');
-
-        button.className = 'delete-button';
-        button.textContent = 'Удалить';
-
-        button.addEventListener('click', function() {
-          deletePhoto(photo.id);
-        });
-
-        card.appendChild(image);
-        card.appendChild(button);
-        list.appendChild(card);
+      button.addEventListener('click', function() {
+        deleteQuote(quote.id);
       });
 
-      database.close();
-    };
-  };
-}
+      card.appendChild(text);
+      card.appendChild(button);
+      list.appendChild(card);
+    });
+  }
 
-function deletePhoto(id) {
-  const request =
-    indexedDB.open('balanceDatabase', 1);
+  function deleteQuote(id) {
+    const quotes =
+      JSON.parse(localStorage.getItem('myQuotes')) || [];
 
-  request.onsuccess = function(event) {
-    const database = event.target.result;
+    const updatedQuotes =
+      quotes.filter(quote => quote.id !== id);
 
-    const transaction =
-      database.transaction('photos', 'readwrite');
-
-    const store =
-      transaction.objectStore('photos');
-
-    store.delete(id);
-
-    transaction.oncomplete = function() {
-      database.close();
-      renderPhotos();
-    };
-  };
-}
-      renderQuotes();
-      renderPhotos();
-    }
+    localStorage.setItem(
+      'myQuotes',
+      JSON.stringify(updatedQuotes)
+    );
 
     renderQuotes();
-  </script>
+  }
+
+  function renderPhotos() {
+    const list =
+      document.getElementById('photos-list');
+
+    list.innerHTML = '';
+
+    const request =
+      indexedDB.open('balanceDatabase', 1);
+
+    request.onupgradeneeded = function(event) {
+      const database = event.target.result;
+
+      if (!database.objectStoreNames.contains('photos')) {
+        database.createObjectStore(
+          'photos',
+          { keyPath: 'id' }
+        );
+      }
+    };
+
+    request.onsuccess = function(event) {
+      const database = event.target.result;
+
+      const transaction =
+        database.transaction('photos', 'readonly');
+
+      const store =
+        transaction.objectStore('photos');
+
+      const getPhotos = store.getAll();
+
+      getPhotos.onsuccess = function() {
+        const photos = getPhotos.result;
+
+        if (photos.length === 0) {
+          list.innerHTML =
+            '<div class="empty">Фото пока нет</div>';
+
+          database.close();
+          return;
+        }
+
+        photos.forEach(photo => {
+          const card =
+            document.createElement('div');
+
+          card.className = 'photo-card';
+
+          const image =
+            document.createElement('img');
+
+          const imageUrl =
+            URL.createObjectURL(photo.image);
+
+          image.src = imageUrl;
+
+          image.onload = function() {
+            URL.revokeObjectURL(imageUrl);
+          };
+
+          const button =
+            document.createElement('button');
+
+          button.className = 'delete-button';
+          button.textContent = 'Удалить';
+
+          button.addEventListener('click', function() {
+            deletePhoto(photo.id);
+          });
+
+          card.appendChild(image);
+          card.appendChild(button);
+          list.appendChild(card);
+        });
+
+        database.close();
+      };
+    };
+  }
+
+  function deletePhoto(id) {
+    const request =
+      indexedDB.open('balanceDatabase', 1);
+
+    request.onsuccess = function(event) {
+      const database = event.target.result;
+
+      const transaction =
+        database.transaction('photos', 'readwrite');
+
+      const store =
+        transaction.objectStore('photos');
+
+      store.delete(id);
+
+      transaction.oncomplete = function() {
+        database.close();
+        renderPhotos();
+      };
+    };
+  }
+
+  renderQuotes();
+  renderPhotos();
+</script>
 
 </body>
 </html>
