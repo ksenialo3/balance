@@ -190,6 +190,20 @@
   margin-top: 6px;
   font-size: 22px;
 }
+.motivation-image {
+  background: #f7dce7;
+  border-radius: 24px;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.motivation-image img {
+  width: 100%;
+  height: 100%;
+  display: none;
+  object-fit: cover;
+  border-radius: 24px;
+}
   </style>
 </head>
 
@@ -205,8 +219,9 @@
     <p id="daily-quote">✨ Ты не обязана хотеть тренироваться</p>
   </section>
 
-  <section class="motivation-image">
-  </section>
+ <section class="motivation-image">
+  <img id="daily-photo" alt="">
+</section>
 
 </div>
 
@@ -546,6 +561,70 @@ if (!weeklyPlan) {
   }
 
   showCurrentQuote();
+</script>
+<script>
+  function showCurrentPhoto() {
+    const request =
+      indexedDB.open('balanceDatabase', 1);
+
+    request.onupgradeneeded = function(event) {
+      const database = event.target.result;
+
+      if (!database.objectStoreNames.contains('photos')) {
+        database.createObjectStore(
+          'photos',
+          { keyPath: 'id' }
+        );
+      }
+    };
+
+    request.onsuccess = function(event) {
+      const database = event.target.result;
+
+      const transaction =
+        database.transaction('photos', 'readonly');
+
+      const store =
+        transaction.objectStore('photos');
+
+      const getPhotos =
+        store.getAll();
+
+      getPhotos.onsuccess = function() {
+        const photos = getPhotos.result;
+
+        if (photos.length === 0) {
+          database.close();
+          return;
+        }
+
+        const now = new Date();
+
+        const dayNumber =
+          Math.floor(now.getTime() / 86400000);
+
+        const photo =
+          photos[dayNumber % photos.length];
+
+        const image =
+          document.getElementById('daily-photo');
+
+        const imageUrl =
+          URL.createObjectURL(photo.image);
+
+        image.src = imageUrl;
+        image.style.display = 'block';
+
+        image.onload = function() {
+          URL.revokeObjectURL(imageUrl);
+        };
+
+        database.close();
+      };
+    };
+  }
+
+  showCurrentPhoto();
 </script>
 </body>
 </html>ы

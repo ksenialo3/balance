@@ -101,9 +101,16 @@
         на главной странице.
       </p>
 
-      <button>
-        Добавить фото
-      </button>
+      <button onclick="document.getElementById('photo-input').click()">
+  Добавить фото
+</button>
+
+<input
+  type="file"
+  id="photo-input"
+  accept="image/*"
+  style="display: none;"
+>
     </section>
 
     <section class="card">
@@ -166,6 +173,60 @@
 
     alert('Цитата добавлена ✨');
   }
+  const photoInput =
+  document.getElementById('photo-input');
+
+photoInput.addEventListener('change', function() {
+  const file = photoInput.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  const request =
+    indexedDB.open('balanceDatabase', 1);
+
+  request.onupgradeneeded = function(event) {
+    const database = event.target.result;
+
+    if (!database.objectStoreNames.contains('photos')) {
+      database.createObjectStore(
+        'photos',
+        { keyPath: 'id' }
+      );
+    }
+  };
+
+  request.onsuccess = function(event) {
+    const database = event.target.result;
+
+    const transaction =
+      database.transaction('photos', 'readwrite');
+
+    const store =
+      transaction.objectStore('photos');
+
+    store.add({
+      id: Date.now(),
+      image: file
+    });
+
+    transaction.oncomplete = function() {
+      alert('Фото добавлено 🌸');
+      photoInput.value = '';
+      database.close();
+    };
+
+    transaction.onerror = function() {
+      alert('Не удалось сохранить фото');
+      database.close();
+    };
+  };
+
+  request.onerror = function() {
+    alert('Не удалось открыть хранилище фото');
+  };
+});
 </script>
 </body>
 </html>
