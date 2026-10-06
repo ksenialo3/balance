@@ -132,9 +132,9 @@
         чтобы их можно было восстановить.
       </p>
 
-      <button>
-        Создать резервную копию
-      </button>
+     <button onclick="createBackup()">
+      Создать резервную копию
+     </button>
     </section>
 
     <section class="card">
@@ -227,6 +227,132 @@ photoInput.addEventListener('change', function() {
     alert('Не удалось открыть хранилище фото');
   };
 });
+async function createBackup() {
+  const backup = {
+    version: 1,
+    createdAt: new Date().toISOString(),
+
+    data: {
+      myWorkouts:
+        JSON.parse(localStorage.getItem('myWorkouts')) || [],
+
+      workoutHistory:
+        JSON.parse(localStorage.getItem('workoutHistory')) || [],
+
+      weeklyPlans:
+        JSON.parse(localStorage.getItem('weeklyPlans')) || {},
+
+      myQuotes:
+        JSON.parse(localStorage.getItem('myQuotes')) || []
+    },
+
+    photos: []
+  };
+const photos =
+  await getPhotosForBackup();
+
+backup.photos = photos;
+  const backupText =
+  JSON.stringify(backup);
+
+const backupFile =
+  new Blob(
+    [backupText],
+    { type: 'application/json' }
+  );
+
+const fileUrl =
+  URL.createObjectURL(backupFile);
+
+const link =
+  document.createElement('a');
+
+const date =
+  new Date().toISOString().slice(0, 10);
+
+link.href = fileUrl;
+link.download =
+  `balance-backup-${date}.json`;
+
+document.body.appendChild(link);
+link.click();
+link.remove();
+
+setTimeout(function() {
+  URL.revokeObjectURL(fileUrl);
+}, 1000);
+}
+function getPhotosForBackup() {
+  return new Promise(function(resolve, reject) {
+    const request =
+      indexedDB.open('balanceDatabase', 1);
+
+    request.onupgradeneeded = function(event) {
+      const database = event.target.result;
+
+      if (!database.objectStoreNames.contains('photos')) {
+        database.createObjectStore(
+          'photos',
+          { keyPath: 'id' }
+        );
+      }
+    };
+
+    request.onsuccess = function(event) {
+      const database = event.target.result;
+
+      const transaction =
+        database.transaction('photos', 'readonly');
+
+      const store =
+        transaction.objectStore('photos');
+
+      const getPhotos = store.getAll();
+
+      getPhotos.onsuccess = async function() {
+        const photos = [];
+
+        for (const photo of getPhotos.result) {
+          const image =
+            await fileToDataUrl(photo.image);
+
+          photos.push({
+            id: photo.id,
+            image: image
+          });
+        }
+
+        database.close();
+        resolve(photos);
+      };
+
+      getPhotos.onerror = function() {
+        database.close();
+        reject(getPhotos.error);
+      };
+    };
+
+    request.onerror = function() {
+      reject(request.error);
+    };
+  });
+}
+
+function fileToDataUrl(file) {
+  return new Promise(function(resolve, reject) {
+    const reader = new FileReader();
+
+    reader.onload = function() {
+      resolve(reader.result);
+    };
+
+    reader.onerror = function() {
+      reject(reader.error);
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
 </script>
 </body>
 </html>
