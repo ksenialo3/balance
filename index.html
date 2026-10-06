@@ -31,20 +31,33 @@
       margin-bottom: 28px;
     }
 
-    .motivation {
-      background: #f7dce7;
-      padding: 24px;
-      border-radius: 24px;
-      margin-bottom: 22px;
-      text-align: center;
-    }
+    .motivation-row {
+  display: grid;
+  grid-template-columns: 65% 30%;
+  gap: 5%;
+  margin-bottom: 22px;
+}
 
-    .motivation p {
-      margin: 0;
-      font-size: 19px;
-      line-height: 1.5;
-      font-weight: bold;
-    }
+.motivation {
+  background: #f7dce7;
+  padding: 20px;
+  border-radius: 24px;
+  margin: 0;
+  text-align: left;
+}
+
+.motivation p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: bold;
+}
+
+.motivation-image {
+  background: #f7dce7;
+  border-radius: 24px;
+  min-height: 100%;
+}
 
     .card {
       background: white;
@@ -173,6 +186,10 @@
   letter-spacing: 3px;
   margin: 20px 0 38px;
 }
+.settings-link {
+  margin-top: 6px;
+  font-size: 22px;
+}
   </style>
 </head>
 
@@ -182,12 +199,16 @@
 
     <h1 class="app-title">BALANCE</h1>
 
-    <section class="motivation">
-      <p>
-        Ты не обязана хотеть тренироваться.<br>
-        Достаточно просто начать.
-      </p>
-    </section>
+    <div class="motivation-row">
+
+  <section class="motivation">
+    <p id="daily-quote">✨ Ты не обязана хотеть тренироваться</p>
+  </section>
+
+  <section class="motivation-image">
+  </section>
+
+</div>
 
     <section class="card">
       <h2>☀️ Утренняя зарядка</h2>
@@ -301,7 +322,12 @@
     Подробнее
   </button>
 </section>
-
+<button
+  class="settings-link"
+  onclick="window.location.href='settings.html'"
+>
+  ⚙
+</button>
   </main>
 <script>
   const history =
@@ -485,6 +511,41 @@ if (!weeklyPlan) {
       });
   }
 </script>
+<script>
+  function showCurrentQuote() {
+    const quotes =
+      JSON.parse(localStorage.getItem('myQuotes')) || [];
 
+    if (quotes.length === 0) {
+      return;
+    }
+
+    const now = new Date();
+    const hour = now.getHours();
+
+    const period =
+      hour >= 5 && hour < 15 ? 0 : 1;
+
+    const dateKey = new Date(now);
+
+    if (hour < 5) {
+      dateKey.setDate(dateKey.getDate() - 1);
+    }
+
+    const dayNumber =
+      Math.floor(dateKey.getTime() / 86400000);
+
+    const quoteIndex =
+      (dayNumber * 2 + period) % quotes.length;
+
+    const quote =
+      quotes[quoteIndex];
+
+    document.getElementById('daily-quote').textContent =
+      `✨ ${quote.text}`;
+  }
+
+  showCurrentQuote();
+</script>
 </body>
 </html>ы

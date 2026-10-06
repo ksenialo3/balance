@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Мои материалы — BALANCE</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff7fa;
+      color: #392d33;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 24px 18px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 24px;
+      color: #c65f87;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      font-size: 28px;
+    }
+
+    h2 {
+      margin: 28px 0 14px;
+      font-size: 20px;
+    }
+
+    .quote-card {
+      background: white;
+      padding: 18px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 6px 20px rgba(120, 70, 90, 0.08);
+    }
+
+    .quote-text {
+      font-weight: bold;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .delete-button {
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: 11px;
+      background: #f7dce7;
+      color: #c65f87;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .empty {
+      color: #9b7c89;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <a class="back" href="settings.html">
+      ← Назад
+    </a>
+
+    <h1>Мои материалы</h1>
+
+    <h2>✨ Цитаты</h2>
+
+    <div id="quotes-list"></div>
+
+  </main>
+
+  <script>
+    function renderQuotes() {
+      const quotes =
+        JSON.parse(localStorage.getItem('myQuotes')) || [];
+
+      const list =
+        document.getElementById('quotes-list');
+
+      list.innerHTML = '';
+
+      if (quotes.length === 0) {
+        list.innerHTML =
+          '<div class="empty">Цитат пока нет</div>';
+
+        return;
+      }
+
+      quotes.forEach(quote => {
+        const card = document.createElement('div');
+        card.className = 'quote-card';
+
+        const text = document.createElement('div');
+        text.className = 'quote-text';
+        text.textContent = `✨ ${quote.text}`;
+
+        const button = document.createElement('button');
+        button.className = 'delete-button';
+        button.textContent = 'Удалить';
+
+        button.addEventListener('click', function() {
+          deleteQuote(quote.id);
+        });
+
+        card.appendChild(text);
+        card.appendChild(button);
+        list.appendChild(card);
+      });
+    }
+
+    function deleteQuote(id) {
+      const quotes =
+        JSON.parse(localStorage.getItem('myQuotes')) || [];
+
+      const updatedQuotes =
+        quotes.filter(quote => quote.id !== id);
+
+      localStorage.setItem(
+        'myQuotes',
+        JSON.stringify(updatedQuotes)
+      );
+
+      renderQuotes();
+    }
+
+    renderQuotes();
+  </script>
+
+</body>
+</html>

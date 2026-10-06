@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Настройки — BALANCE</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff7fa;
+      color: #392d33;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 24px 18px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 24px;
+      color: #c65f87;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      font-size: 28px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 22px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 20px rgba(120, 70, 90, 0.08);
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .card p {
+      margin: 0 0 16px;
+      color: #9b7c89;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      padding: 14px;
+      background: #e978a4;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <a class="back" href="index.html">
+      ← Назад
+    </a>
+
+    <h1>Настройки</h1>
+
+    <section class="card">
+      <h2>✨ Цитаты</h2>
+      <p>
+        Добавляй свои цитаты для главной страницы.
+        Они будут меняться в 05:00 и 15:00.
+      </p>
+
+     <button onclick="addQuote()">
+      Добавить цитату
+     </button>
+    </section>
+
+    <section class="card">
+      <h2>🌸 Фото</h2>
+      <p>
+        Добавляй свои фотографии для карточки
+        на главной странице.
+      </p>
+
+      <button>
+        Добавить фото
+      </button>
+    </section>
+
+    <section class="card">
+      <h2>Мои материалы</h2>
+      <p>
+        Просматривай и удаляй добавленные
+        цитаты и фотографии.
+      </p>
+
+      <button onclick="window.location.href='materials.html'">
+  Открыть
+</button>
+    </section>
+
+    <section class="card">
+      <h2>Резервная копия</h2>
+      <p>
+        Сохрани копию своих данных,
+        чтобы их можно было восстановить.
+      </p>
+
+      <button>
+        Создать резервную копию
+      </button>
+    </section>
+
+    <section class="card">
+      <h2>Восстановление</h2>
+      <p>
+        Восстанови данные BALANCE
+        из ранее сохранённой копии.
+      </p>
+
+      <button>
+        Восстановить из копии
+      </button>
+    </section>
+
+  </main>
+<script>
+  function addQuote() {
+    const quote = prompt('Напиши новую цитату ✨');
+
+    if (!quote || !quote.trim()) {
+      return;
+    }
+
+    const quotes =
+      JSON.parse(localStorage.getItem('myQuotes')) || [];
+
+    quotes.push({
+      id: Date.now(),
+      text: quote.trim()
+    });
+
+    localStorage.setItem(
+      'myQuotes',
+      JSON.stringify(quotes)
+    );
+
+    alert('Цитата добавлена ✨');
+  }
+</script>
+</body>
+</html>
