@@ -144,9 +144,16 @@
         из ранее сохранённой копии.
       </p>
 
-      <button>
-        Восстановить из копии
-      </button>
+      <button onclick="document.getElementById('backup-input').click()">
+  Восстановить из копии
+</button>
+
+<input
+  type="file"
+  id="backup-input"
+  accept=".json,application/json"
+  style="display: none;"
+>
     </section>
 
   </main>
@@ -353,6 +360,62 @@ function fileToDataUrl(file) {
     reader.readAsDataURL(file);
   });
 }
+const backupInput =
+  document.getElementById('backup-input');
+
+backupInput.addEventListener('change', async function() {
+  const file = backupInput.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  try {
+    const text =
+      await file.text();
+
+    const backup =
+      JSON.parse(text);
+
+    if (
+      !backup ||
+      backup.version !== 1 ||
+      !backup.data ||
+      !Array.isArray(backup.photos)
+    ) {
+      throw new Error('Некорректная резервная копия');
+    }
+
+    const requiredData = [
+      'myWorkouts',
+      'workoutHistory',
+      'weeklyPlans',
+      'myQuotes'
+    ];
+
+    const hasAllData =
+      requiredData.every(function(key) {
+        return Object.prototype.hasOwnProperty.call(
+          backup.data,
+          key
+        );
+      });
+
+    if (!hasAllData) {
+      throw new Error('В резервной копии не хватает данных');
+    }
+
+    alert(
+      'Резервная копия BALANCE успешно проверена 🌸'
+    );
+  } catch (error) {
+    alert(
+      'Не удалось прочитать резервную копию BALANCE'
+    );
+  }
+
+  backupInput.value = '';
+});
 </script>
 </body>
 </html>
