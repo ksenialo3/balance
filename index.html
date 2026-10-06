@@ -7,11 +7,17 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon.svg">
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+>
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #fff7fa;
+font-family: 'Montserrat', sans-serif;      background: #fff7fa;
       color: #392d33;
     }
 
@@ -204,6 +210,9 @@
   object-fit: cover;
   border-radius: 24px;
 }
+.plan-reminder p {
+  color: #392d33;
+}
   </style>
 </head>
 
@@ -237,7 +246,7 @@
       <button onclick="window.location.href='workouts.html?type=evening'">Выбрать тренировку</button>
     </section>
 <section class="card plan-reminder" id="plan-reminder">
-  <h2>План на новую неделю 🌸</h2>
+  <h2>🌸 План на новую неделю</h2>
 
   <p>
     Выбери, сколько тренировок хочешь сделать на этой неделе.
