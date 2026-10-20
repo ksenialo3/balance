@@ -371,9 +371,13 @@ function renderWorkouts(workouts) {
           ${workout.duration} минут
         </div>
 
-        <button onclick="window.open('${workout.url}', '_blank')">
-          Начать тренировку
-        </button>
+        <button onclick="${
+  workout.id === 1
+    ? "document.getElementById('video-test').style.display='block'; document.getElementById('video-test').scrollIntoView({behavior:'smooth'});"
+    : `window.open('${workout.url}', '_blank')`
+}">
+  Начать тренировку
+</button>
 
         <button
           class="complete-button"
@@ -498,6 +502,18 @@ if (!undo) {
 }
 }
   </script>
+<div id="video-test" style="display: none; padding: 20px;">
+  <button onclick="document.getElementById('video-test').style.display='none'">
+    ← Закрыть видео
+  </button>
 
+  <iframe
+    src="https://vk.com/video_ext.php?oid=-216599464&id=456239586"
+    style="width: 100%; aspect-ratio: 16 / 9; border: 0; margin-top: 16px;"
+    allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+    allowfullscreen
+    title="Лимфодренажная зарядка"
+  ></iframe>
+</div>
 </body>
 </html>
