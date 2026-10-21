@@ -389,11 +389,7 @@ function renderWorkouts(workouts) {
           ${workout.duration} минут
         </div>
 
-        <button onclick="${
-  workout.id === 1
-    ? "document.getElementById('video-test').style.display='block'; document.getElementById('video-test').scrollIntoView({behavior:'smooth'});"
-    : `window.open('${workout.url}', '_blank')`
-}">
+        <button onclick="startWorkout(${workout.id}, '${workout.url}')">
   Начать тренировку
 </button>
 
@@ -458,17 +454,17 @@ function startWorkout(id, url) {
 
   window.open(url, '_blank');
 }
-function startWorkout(id, url) {
-  if (id === 1) {
-    window.open(
-      'https://vk.com/video_ext.php?oid=-216599464&id=456239586',
-      '_blank'
-    );
-    return;
-  }
+function deleteWorkout(id) {
+  const savedWorkouts =
+    JSON.parse(localStorage.getItem('myWorkouts')) || [];
 
-  window.open(url, '_blank');
-}
+  const updatedWorkouts =
+    savedWorkouts.filter(workout => workout.id !== id);
+
+  localStorage.setItem(
+    'myWorkouts',
+    JSON.stringify(updatedWorkouts)
+  );
 
   window.location.reload();
 }
