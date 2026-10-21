@@ -441,16 +441,15 @@ filterButtons.forEach(button => {
 });
 function startWorkout(id, url) {
   if (id === 1) {
-    const player = document.getElementById('video-test');
-
-    player.style.display = 'block';
-    player.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-
+    window.open(
+      'https://vk.com/video_ext.php?oid=-216599464&id=456239586',
+      '_blank'
+    );
     return;
   }
+
+  window.open(url, '_blank');
+}
 
   window.open(url, '_blank');
 }
@@ -532,17 +531,6 @@ if (!undo) {
 }
 
   </script>
-<div id="video-test" class="video-overlay" style="display: none;">  <button onclick="document.getElementById('video-test').style.display='none'">
-    ← Закрыть видео
-  </button>
 
-  <iframe
-    src="https://vk.com/video_ext.php?oid=-216599464&id=456239586"
-    style="width: 100%; aspect-ratio: 16 / 9; border: 0; margin-top: 16px;"
-    allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-    allowfullscreen
-    title="Лимфодренажная зарядка"
-  ></iframe>
-</div>
 </body>
 </html>
