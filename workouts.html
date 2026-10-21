@@ -443,6 +443,21 @@ filterButtons.forEach(button => {
     renderWorkouts(filteredWorkouts);
   });
 });
+function startWorkout(id, url) {
+  if (id === 1) {
+    const player = document.getElementById('video-test');
+
+    player.style.display = 'block';
+    player.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+
+    return;
+  }
+
+  window.open(url, '_blank');
+}
 function deleteWorkout(id) {
   const savedWorkouts =
     JSON.parse(localStorage.getItem('myWorkouts')) || [];
