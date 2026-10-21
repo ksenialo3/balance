@@ -471,11 +471,16 @@ filterButtons.forEach(button => {
 });
 
 function startWorkout(id, url) {
-  if (id === 1) {
-    window.open(
-      'https://vk.com/video_ext.php?oid=-216599464&id=456239586',
-      '_blank'
-    );
+  const vkVideo = url.match(/video(-?\d+)_(\d+)/);
+
+  if (vkVideo) {
+    const ownerId = vkVideo[1];
+    const videoId = vkVideo[2];
+
+    const playerUrl =
+      `https://vk.com/video_ext.php?oid=${ownerId}&id=${videoId}`;
+
+    window.open(playerUrl, '_blank');
     return;
   }
 
