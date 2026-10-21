@@ -458,17 +458,17 @@ function startWorkout(id, url) {
 
   window.open(url, '_blank');
 }
-function deleteWorkout(id) {
-  const savedWorkouts =
-    JSON.parse(localStorage.getItem('myWorkouts')) || [];
+function startWorkout(id, url) {
+  if (id === 1) {
+    window.open(
+      'https://vk.com/video_ext.php?oid=-216599464&id=456239586',
+      '_blank'
+    );
+    return;
+  }
 
-  const updatedWorkouts =
-    savedWorkouts.filter(workout => workout.id !== id);
-
-  localStorage.setItem(
-    'myWorkouts',
-    JSON.stringify(updatedWorkouts)
-  );
+  window.open(url, '_blank');
+}
 
   window.location.reload();
 }
